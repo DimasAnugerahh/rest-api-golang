@@ -3,7 +3,9 @@ package config
 import (
 	"Rest-api-golang/model"
 	"fmt"
+	"os"
 
+	"github.com/joho/godotenv"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -26,21 +28,35 @@ type Config struct {
 }
 
 func InitDB() {
+	godotenv.Load(".env")
+	var res = new(Config)
 
-	config := Config{
-		DB_Username: "root",
-		DB_Password: "",
-		DB_Port:     "3306",
-		DB_Host:     "127.0.0.1",
-		DB_Name:     "crud_go",
+	if val, found := os.LookupEnv("DBPORT"); found {
+		res.DB_Port = val
+	}
+
+	if val, found := os.LookupEnv("DBHOST"); found {
+		res.DB_Host = val
+	}
+
+	if val, found := os.LookupEnv("DBUSER"); found {
+		res.DB_Username = val
+	}
+
+	if val, found := os.LookupEnv("DBPASS"); found {
+		res.DB_Password = val
+	}
+
+	if val, found := os.LookupEnv("DBNAME"); found {
+		res.DB_Name = val
 	}
 
 	connectionString := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8&parseTime=True&loc=Local",
-		config.DB_Username,
-		config.DB_Password,
-		config.DB_Host,
-		config.DB_Port,
-		config.DB_Name,
+		res.DB_Username,
+		res.DB_Password,
+		res.DB_Host,
+		res.DB_Port,
+		res.DB_Name,
 	)
 
 	var err error
